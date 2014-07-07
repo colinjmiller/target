@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      body {
+        color: white;
+      }
+
+      #cannon {
+        position: absolute;
+        -webkit-transform-origin: 50% top;
+        -o-transform-origin: 50% top;
+        -ms-transform-origin: 50% top;
+        transform-origin: 50% top;
+        width: 3px;
+        height: 35px;
+        background-color: black;
+        top: 1.5px;
+        z-index: 101;
+      }
+
+      .projectile {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        z-index: 100;
+        background-color: red;
+      }
+
+      #tank {
+        position: absolute;
+        bottom: 5%;
+        left: 45%;
+        width: 64px;
+        height: 32px;
+        background-color: black;
+      }
+
+      #target {
+        position: absolute;
+        top: 250px;
+        left: 516px;
+        width: 32px;
+        height: 32px;
+        background-color: #800;
+        color: white;
+        font-size: 43px;
+        line-height: 80%;
+        text-align: center;
+      }
+
+      #topBoundary {
+        width: 100%;
+        height: 5%;
+        min-height: 40px;
+        top: 0px;
+        left: 0px;
+      }
+
+      #bottomBoundary {
+        width: 100%;
+        height: 5%;
+        top: 95%;
+        left: 0px;
+      }
+
+      #leftBoundary {
+        width: 2%;
+        height: 100%;
+        left: 0px;
+        top: 0px;
+      }
+
+      #rightBoundary {
+        width: 2%;
+        height: 100%;
+        left: 98%;
+        top: 0px;
+      }
+
+      .boundary {
+        position: absolute;
+        background-color: black;
+        z-index: -1;
+      }
+    </style>
+  	<script src="controller.js"></script>
+  	<title>Target</title>
+  </head>
+  <body>
+  	<div id="controls">
+      <label>
+        Speed
+        <input type="number" id="speed" value="50" title="speed"/>
+      </label>
+      <label>
+        Direction
+        <input type="number" id="direction" value="90" />
+      </label>
+  	</div>
+    <div id="topBoundary" class="boundary"></div>
+    <div id="leftBoundary" class="boundary"></div>
+    <div id="bottomBoundary" class="boundary"></div>
+    <div id="rightBoundary" class="boundary"></div>
+  	<div id="tank">
+      <div id="cannon"></div>
+    </div>
+    <div id="target">T</div>
+  </body>
+</html>
