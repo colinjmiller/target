@@ -5,6 +5,7 @@
 var FPS = 60;
 var GRAVITY = 9.8;
 
+var MULTIPLER = (window.innerWidth + window.innerHeight) / 200;
 var stepper = null;
 var projectileVelocity = null;
 
@@ -38,6 +39,33 @@ window.onload = function() {
         break;
   	}
   }
+  
+  window.onresize = resizingModal;
+  
+  var closers = document.getElementsByClassName("close");
+  for (var i = 0; i < closers.length; i++) {
+	closers[i].onclick = closeModal;
+  }
+}
+
+function resizingModal() {
+  document.getElementById("message").innerHTML = 
+	"Resizing the browser window forces the game to recalculate values. " +
+	"Please finish adjusting the window, then click the button below " +
+	"to continue.";
+  var modalPieces = document.getElementsByClassName("modal");
+  for (var i = 0; i < modalPieces.length; i++) {
+	modalPieces[i].style.visibility = "visible";
+  }
+}
+
+function closeModal() {
+  var modalPieces = document.getElementsByClassName("modal");
+  for (var i = 0; i < modalPieces.length; i++) {
+	modalPieces[i].style.visibility = "hidden";
+  }
+  MULTIPLER = (window.innerWidth + window.innerHeight) / 200;
+  placeTarget();
 }
 
 function placeTarget() {
@@ -49,7 +77,7 @@ function placeTarget() {
     speed = Math.ceil(Math.random() * 50 + 50);
   else 
     speed = Math.ceil(Math.random() * 90 + 10);
-  speed *= 10;
+  speed *= MULTIPLER;
 
   var direction = Math.round(Math.random() * 180);
   projectileVelocity = {
@@ -101,7 +129,7 @@ function placeTarget() {
 
 function keyboardHandler() {
   if (!document.getElementsByClassName("projectile").length) {
-    var speed = document.getElementById("speed").value * 10;
+    var speed = document.getElementById("speed").value * MULTIPLER;
     var direction = document.getElementById("direction").value;
     projectileVelocity = {
       speed: speed,
@@ -196,10 +224,6 @@ function checkCollision(target, projectile) {
   // Is the projectile within the coords of the target?
   var inTargetY = projectileY > targetY && projectileY < (targetY + targetHeight);
   var inTargetX = projectileX > targetX && projectileX < (targetX + targetWidth);
-  console.log(target);
-  if (inTargetY && inTargetX) {
-    console.log("true");
-  }
   return inTargetY && inTargetX;
 }
 
