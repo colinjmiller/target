@@ -6,6 +6,10 @@ var FPS = 60;
 var GRAVITY = 9.8;
 
 var MULTIPLER = (window.innerWidth + window.innerHeight) / 200;
+var MIN_SPEED = 0;
+var MAX_SPEED = 100;
+var MIN_DIRECTION = 0;
+var MAX_DIRECTION = 180;
 var stepper = null;
 var projectileVelocity = null;
 
@@ -151,7 +155,7 @@ function leftArrowHandler() {
 
 function modifyDirection(amount) {
   var direction = document.getElementById("direction");
-  direction.value = mod(181, (parseInt(direction.value) + amount));
+  direction.value = Math.max(MIN_DIRECTION, Math.min(MAX_DIRECTION, (parseInt(direction.value) + amount)));
   var setting = "rotate(" + (90 + parseInt(direction.value)) +"deg)";
   cannon.style.webkitTransform = setting;
   cannon.style.MozTransform = setting;
@@ -170,7 +174,7 @@ function downArrowHandler() {
 
 function modifySpeed(amount) {
   var speed = document.getElementById("speed");
-  speed.value = mod(101, (parseInt(speed.value) + amount))
+  speed.value = Math.max(MIN_SPEED, Math.min(MAX_SPEED, (parseInt(speed.value) + amount)));
 }
 
 function createProjectile() {
