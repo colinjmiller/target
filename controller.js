@@ -27,7 +27,7 @@ window.onload = function() {
     //evt.preventDefault();
   	switch(evt.keyCode) {
   	  case 32:
-  	  	keyboardHandler();
+  	  	spaceHandler();
   	  	break;
       case 37:
         leftArrowHandler();
@@ -42,6 +42,9 @@ window.onload = function() {
         downArrowHandler();
         break;
   	}
+
+    document.getElementById("direction").addEventListener("change", adjustCannon);
+    document.getElementById("fire").addEventListener("click", fire);
   }
   
   window.onresize = resizingModal;
@@ -131,7 +134,7 @@ function placeTarget() {
   target.style.left = coords[1];
 }
 
-function keyboardHandler() {
+function fire() {
   if (!document.getElementsByClassName("projectile").length) {
     var speed = document.getElementById("speed").value * MULTIPLER;
     var direction = document.getElementById("direction").value;
@@ -145,6 +148,10 @@ function keyboardHandler() {
   }
 }
 
+function spaceHandler() {
+  fire()
+}
+
 function rightArrowHandler() {
   modifyDirection(1);
 }
@@ -156,6 +163,11 @@ function leftArrowHandler() {
 function modifyDirection(amount) {
   var direction = document.getElementById("direction");
   direction.value = Math.max(MIN_DIRECTION, Math.min(MAX_DIRECTION, (parseInt(direction.value) + amount)));
+  adjustCannon();
+}
+
+function adjustCannon() {
+  var direction = document.getElementById("direction");
   var setting = "rotate(" + (90 + parseInt(direction.value)) +"deg)";
   cannon.style.webkitTransform = setting;
   cannon.style.MozTransform = setting;
