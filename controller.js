@@ -27,18 +27,23 @@ window.onload = function() {
     //evt.preventDefault();
   	switch(evt.keyCode) {
   	  case 32:
+        evt.preventDefault();
   	  	spaceHandler();
   	  	break;
       case 37:
+        evt.preventDefault();
         leftArrowHandler();
         break;
       case 38:
+        evt.preventDefault();
         upArrowHandler();
         break;
   	  case 39:
+        evt.preventDefault();
   	  	rightArrowHandler();
   	  	break;
   	  case 40:
+        evt.preventDefault();
         downArrowHandler();
         break;
   	}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="jquery-2.1.1.min.js"></script>
+    <script src="canvas.js"></script>
+    <title>Target</title>
+    <style>
+      #background {
+        background-color: #87CEFA;
+        display: inline-block;
+      }
+
+      canvas {
+        border: 20px solid black;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="background">
+      <canvas id="game" width="760" height="560">
+        Sorry, but your browser is too old to support this game. Please update it.
+      </canvas>
+    </div>
+    <div id="controls">
+      <label>
+        Speed: 
+        <input type="number" id="speed" value="50" title="speed"/>
+      </label>
+      <label>
+        Direction: 
+        <input type="number" id="direction" value="90" />
+      </label>
+      <button id="fire">Fire!</button>
+    </div>
+  </body>
+</html>
