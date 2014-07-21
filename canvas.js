@@ -16,6 +16,8 @@ var direction = 90;
 var speed = 50;
 var stepper = null;
 
+var tank = null;
+
 var instances = [];
 
 $(document).ready(function() {
@@ -34,7 +36,68 @@ $(document).ready(function() {
 
 function setup() {
   console.log("Setup");
-  instances.push(new Tank(60, 30));
+  tank = new Tank(60, 30);
+  instances.push(tank);
+}
+
+$(document).keydown(function(evt) {
+  switch(evt.which) {
+    case 32:
+      evt.preventDefault();
+      spaceHandler();
+      break;
+    case 37:
+      evt.preventDefault();
+      leftArrowHandler();
+      break;
+    case 38:
+      evt.preventDefault();
+      upArrowHandler();
+      break;
+    case 39:
+      evt.preventDefault();
+      rightArrowHandler();
+      break;
+    case 40:
+      evt.preventDefault();
+      downArrowHandler();
+      break;
+  }
+});
+
+function spaceHandler() {
+  console.log("fire() should be called");
+  var speed = document.getElementById("speed").value * MULTIPLIER;
+  var direction = document.getElementById("direction").value;
+  var ball = new Projectile(tank.cannonTip(), speed, direction, 10);
+  instances.push(ball);
+}
+
+function rightArrowHandler() {
+  modifyDirection(1);
+}
+
+function leftArrowHandler() {
+  modifyDirection(-1);
+}
+
+function modifyDirection(amount) {
+  var direction = document.getElementById("direction");
+  direction.value = Math.max(MIN_DIRECTION, Math.min(MAX_DIRECTION, (parseInt(direction.value) + amount)));
+  console.log("adjustCannon() should be called");
+}
+
+function upArrowHandler() {
+  modifySpeed(1);
+}
+
+function downArrowHandler() {
+  modifySpeed(-1);
+}
+
+function modifySpeed(amount) {
+  var speed = document.getElementById("speed");
+  speed.value = Math.max(MIN_SPEED, Math.min(MAX_SPEED, (parseInt(speed.value) + amount)));
 }
 
 function step() {
@@ -49,124 +112,72 @@ function step() {
   ctx.restore();
   $.each(instances, function(index, instance) {
     instance.step();
-    instance.draw(ctx);
+    // If the instance destroys itself...
+    if (!instance.remove) { // TODO: Make this work
+      instance.draw(ctx);
+    }
   });
 }
 
-function Tank(width, height) {
+function createProjectile() {
+  var speed = document.getElementById("speed").value * MULTIPLIER;
+  var direction = document.getElementById("direction").value;
+  var ball = new Projectile({x: 50, y: 50}, 200, 90, 10);
+  instances.push(ball);
+}
+
+var Tank = function(width, height) {
 
   this.width = width;
   this.height = height;
   this.location = {x: CANVAS_WIDTH / 2,
-				   y: CANVAS_HEIGHT - this.height};
+                   y: CANVAS_HEIGHT - this.height};
 
-  this.cannon = new Cannon(25, this);
+  var cannon = new Cannon(25, this);
   
   this.cannonTip = function() {
-	return this.cannon.cannonTip();
+    return cannon.cannonTip();
   };
   
   this.step = function() {
-	this.cannon.step();
+    cannon.step();
   };
   
   this.draw = function(ctx) {
-	this.cannon.draw(ctx);
-	ctx.fillStyle = "black";
-	ctx.fillRect(this.location.x  - this.width / 2, this.location.y, this.width, this.height);
+    cannon.draw(ctx);
+    ctx.fillStyle = "black";
+    ctx.fillRect(this.location.x  - this.width / 2, this.location.y, this.width, this.height);
   };
-}
+};
 
-function Cannon(length, tank) {
+var Cannon = function(length, tank) {
 
-	this.length = length;
-	this.location = tank.location;
-	this.direction = document.getElementById("direction").value;
-	
-	this.cannonTip = function() {
-	  return {x: this.location.x - Math.cos(Math.PI / 180 * this.direction) * this.length,
-			  y: this.location.y - Math.sin(Math.PI / 180 * this.direction) * this.length};
+  this.length = length;
+  this.location = tank.location;
+  this.direction = document.getElementById("direction").value;
+  
+  this.cannonTip = function() {
+    return {x: this.location.x - Math.cos(Math.PI / 180 * this.direction) * this.length,
+        y: this.location.y - Math.sin(Math.PI / 180 * this.direction) * this.length};
     };
-	
-	this.step = function() {
-	  this.location = tank.location;
-	  this.direction = document.getElementById("direction").value;
-	};
-	
-	this.draw = function(ctx) {
-	  var cannonTipCoords = this.cannonTip();
-	  ctx.lineWidth = 5;
-	  ctx.strokeStyle = "red";
-	  ctx.beginPath();
-	  ctx.moveTo(this.location.x, this.location.y + 5);
-	  ctx.lineTo(cannonTipCoords.x, cannonTipCoords.y);
-	  ctx.stroke();
-	  console.log("Called");
-	};
-	
-	$(document).keydown(function(evt) {
-		switch(evt.which) {
-		  case 32:
-			evt.preventDefault();
-			spaceHandler();
-			break;
-		  case 37:
-			evt.preventDefault();
-			this.leftArrowHandler();
-			break;
-		  case 38:
-			evt.preventDefault();
-			this.upArrowHandler();
-			break;
-		  case 39:
-			evt.preventDefault();
-			this.rightArrowHandler();
-			break;
-		  case 40:
-			evt.preventDefault();
-			this.downArrowHandler();
-			break;
-		}
-	});
-	
-	function spaceHandler() {
-	  console.log("fire() should be called");
-	  var speed = document.getElementById("speed").value * MULTIPLIER;
-	  var direction = document.getElementById("direction").value;
-	  var ball = new Projectile(location, speed, direction, 5);
-	  instances.push(ball);
-	  console.log(ball);
-	}
+  
+  this.step = function() {
+    this.location = tank.location;
+    this.direction = document.getElementById("direction").value;
+  };
+  
+  this.draw = function(ctx) {
+    var cannonTipCoords = this.cannonTip();
+    ctx.lineWidth = 5;
+    ctx.strokeStyle = "red";
+    ctx.beginPath();
+    ctx.moveTo(this.location.x, this.location.y + 5);
+    ctx.lineTo(cannonTipCoords.x, cannonTipCoords.y);
+    ctx.stroke();
+  };
+};
 
-	this.rightArrowHandler = function() {
-	  this.modifyDirection(1);
-	}
-
-	this.leftArrowHandler = function() {
-	  this.modifyDirection(-1);
-	}
-
-	this.modifyDirection = function(amount) {
-	  var direction = document.getElementById("direction");
-	  direction.value = Math.max(MIN_DIRECTION, Math.min(MAX_DIRECTION, (parseInt(direction.value) + amount)));
-	  console.log("adjustCannon() should be called");
-	}
-
-	this.upArrowHandler = function() {
-	  this.modifySpeed(1);
-	}
-
-	this.downArrowHandler = function() {
-	  this.modifySpeed(-1);
-	}
-
-	this.modifySpeed = function(amount) {
-	  var speed = document.getElementById("speed");
-	  speed.value = Math.max(MIN_SPEED, Math.min(MAX_SPEED, (parseInt(speed.value) + amount)));
-	}
-}
-
-function Projectile(location, speed, direction, size) {
+var Projectile = function(location, speed, direction, size) {
 
   this.speed = speed;
   this.direction = direction;
@@ -175,12 +186,18 @@ function Projectile(location, speed, direction, size) {
   this.verticalSpeed = -Math.sin(Math.PI / 180 * direction) * speed;
   this.horizontalSpeed = -Math.cos(Math.PI / 180 * direction) * speed;
 
+  this.remove = false;
+
   this.step = function() {
     var dy = this.verticalSpeed / FPS;
     var dx = this.horizontalSpeed / FPS;
     this.location.x += dx;
     this.location.y += dy;
     this.verticalSpeed += GRAVITY;
+    if (this.isOutside()) {
+      console.log("Outside!");
+      this.remove = true;
+    }
   };
 
   this.draw = function(ctx) {
@@ -190,4 +207,16 @@ function Projectile(location, speed, direction, size) {
     ctx.fill();
   };
 
-}
+  this.isOutside = function() {
+    return (this.location.x < 0 || this.location.x > CANVAS_WIDTH || this.location.y < 0 || this.location.y > CANVAS_HEIGHT);
+  };
+};
+
+
+var GameObject = function() {
+  this.remove = false;
+};
+
+Tank.prototype = new GameObject();
+Cannon.prototype = new GameObject();
+Projectile.prototype = new GameObject();
