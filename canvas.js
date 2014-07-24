@@ -38,6 +38,8 @@ function setup() {
   console.log("Setup");
   tank = new Tank(60, 30);
   instances.push(tank);
+  var target = new Target({x: 50, y: 50}, 10);
+  instances.push(target);
 }
 
 $(document).keydown(function(evt) {
@@ -110,13 +112,24 @@ function step() {
 
   // Restore the transform
   ctx.restore();
-  $.each(instances, function(index, instance) {
-    instance.step();
-    // If the instance destroys itself...
-    if (!instance.remove) { // TODO: Make this work
-      instance.draw(ctx);
+  // $.each(instances, function(index, instance) {
+  //   instance.step();
+  //   // If the instance destroys itself...
+  //   if (instance.shouldRemove()) { // TODO: Make this work
+  //     instances.splice(instances.indexOf(instance), 1);
+  //   } else {
+  //     instance.draw(ctx);
+  //   }
+  // });
+
+  for (var i = instances.length - 1; i >= 0; i--) {
+    instances[i].step();
+    if (instances[i].shouldRemove()) {
+      instances.splice(i, 1);
+    } else {
+      instances[i].draw(ctx);
     }
-  });
+  }
 }
 
 function createProjectile() {
@@ -186,17 +199,14 @@ var Projectile = function(location, speed, direction, size) {
   this.verticalSpeed = -Math.sin(Math.PI / 180 * direction) * speed;
   this.horizontalSpeed = -Math.cos(Math.PI / 180 * direction) * speed;
 
-  this.remove = false;
-
   this.step = function() {
     var dy = this.verticalSpeed / FPS;
     var dx = this.horizontalSpeed / FPS;
     this.location.x += dx;
     this.location.y += dy;
     this.verticalSpeed += GRAVITY;
-    if (this.isOutside()) {
+    if (this.shouldRemove()) {
       console.log("Outside!");
-      this.remove = true;
     }
   };
 
@@ -207,16 +217,35 @@ var Projectile = function(location, speed, direction, size) {
     ctx.fill();
   };
 
-  this.isOutside = function() {
+  this.shouldRemove = function() {
     return (this.location.x < 0 || this.location.x > CANVAS_WIDTH || this.location.y < 0 || this.location.y > CANVAS_HEIGHT);
   };
 };
 
+var Target = function(location, size) {
+
+  this.location = location;
+  this.size = size;
+
+  this.draw = function() {
+    ctx.beginPath();
+    ctx.fillStyle = "#AA0000";
+    ctx.arc(location.x, location.y, size, 0, Math.PI * 2, true);
+    ctx.fill();
+  };
+
+}
+
 
 var GameObject = function() {
-  this.remove = false;
+
+  this.step = function() { false; }
+  this.draw = function(ctx) { false; }
+  this.shouldRemove = function() { false; }
+
 };
 
 Tank.prototype = new GameObject();
 Cannon.prototype = new GameObject();
 Projectile.prototype = new GameObject();
+Target.prototype = new GameObject();
